@@ -6,7 +6,7 @@
 #pragma config(Motor,  port3,            ,             tmotorVex393_MC29, openLoop, reversed, driveRight)
 #pragma config(Motor,  port4,            ,             tmotorVex393_MC29, openLoop, driveLeft)
 #pragma config(Motor,  port5,            ,             tmotorVex393_MC29, openLoop, reversed, driveRight)
-#pragma config(Motor,  port6,            ,             tmotorVex393_MC29, openLoop)
+#pragma config(Motor,  port6,            ,             tmotorVex393_MC29, openLoop, reversed)
 #pragma config(Motor,  port7,            ,             tmotorVex393_MC29, openLoop)
 #pragma config(Motor,  port8,            ,             tmotorVex393_MC29, openLoop)
 #pragma config(Motor,  port9,            ,             tmotorVex393_MC29, openLoop, reversed)
@@ -37,7 +37,7 @@ void go(int v0, int v1, int v2, int v3){
 }
 
 int deWine(int inp){
-	if((inp < 15) && (inp > -15)){
+	if((inp < 20) && (inp > -20)){
 		return 0;
 	}
 	if(inp > 127) inp = 127;
@@ -115,7 +115,7 @@ task usercontrol()
 			motor[port9] = -127;
 		}else{
 			motor[port8] = 0;
-			motor[port9] = 0;
+			motor[port9] = 9;
 		}
 	}
 }
