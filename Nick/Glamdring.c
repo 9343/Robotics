@@ -1,9 +1,12 @@
 #pragma config(UART_Usage, UART1, uartUserControl, baudRate4800, IOPins, None, None)
 #pragma config(UART_Usage, UART2, uartNotUsed, baudRate4800, IOPins, None, None)
+#pragma config(I2C_Usage, I2C1, i2cSensors)
+#pragma config(Sensor, I2C_1,  ,               sensorQuadEncoderOnI2CPort,    , AutoAssign)
+#pragma config(Sensor, I2C_2,  ,               sensorQuadEncoderOnI2CPort,    , AutoAssign)
 #pragma config(Motor,  port1,            ,             tmotorVex393_HBridge, openLoop)
 #pragma config(Motor,  port2,            ,             tmotorVex393_MC29, openLoop)
-#pragma config(Motor,  port3,            ,             tmotorVex393_MC29, openLoop, reversed)
-#pragma config(Motor,  port4,            ,             tmotorVex393_MC29, openLoop)
+#pragma config(Motor,  port3,            ,             tmotorVex393_MC29, openLoop, reversed, encoderPort, I2C_1)
+#pragma config(Motor,  port4,            ,             tmotorVex393_MC29, openLoop, encoderPort, I2C_2)
 #pragma config(Motor,  port5,            ,             tmotorVex393_MC29, openLoop, reversed)
 #pragma config(Motor,  port6,            ,             tmotorVex393_MC29, openLoop)
 #pragma config(Motor,  port7,            ,             tmotorVex393_MC29, openLoop)
@@ -32,8 +35,31 @@ int clamp(int x, int min, int max)
 	return x;
 }
 
+task spinners()
+{
+	int avgValue = 450;
+	int lastValue = getMotorEncoder(port4);
+
+	while(true)
+	{
+		writeDebugStream("Change %i\n", lastValue - getMotorEncoder(port4));
+
+		if((lastValue - getMotorEncoder(port4)) > avgValue) {
+			maxspinnerspeed = clamp(maxspinnerspeed + 10, -127, 127);
+		} else if((lastValue - getMotorEncoder(port4)) < avgValue) {
+			maxspinnerspeed = clamp(maxspinnerspeed - 20, -127, 127);
+		}
+
+		lastValue = getMotorEncoder(port4);
+
+		sleep(500);
+	}
+}
+
 task main()
 {
+	startTask(spinners);
+
 	int spinnerspeed = 0;
 
 	while(true)
